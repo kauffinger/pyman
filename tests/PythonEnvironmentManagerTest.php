@@ -100,6 +100,6 @@ test('installDependencies throws exception when pip install fails', function ():
         $this->manager->setup();
         test()->fail('Expected PymanException was not thrown');
     } catch (PymanException $e) {
-        expect($e->getMessage())->toContain('Failed to install dependencies');
+        expect($e->getMessage())->toContain('Failed to install requirements');
     }
 });

@@ -6,15 +6,29 @@ namespace Kauffinger\Pyman;
 
 use Illuminate\Process\Factory;
 use Illuminate\Process\PendingProcess;
+use Kauffinger\Pyman\Concerns\ManagesDependencies;
+use Kauffinger\Pyman\Exceptions\FolderCouldNotBeCreatedException;
 use Kauffinger\Pyman\Exceptions\PymanException;
+use Kauffinger\Pyman\Exceptions\VenvManagementException;
 
 class PythonEnvironmentManager
 {
+    use ManagesDependencies;
+
     private readonly string $pythonDir;
+
+    private readonly RequirementsManager $requirements;
 
     public function __construct(string $basePath, private readonly Factory $processFactory)
     {
         $this->pythonDir = realpath($basePath) ?: $basePath;
+
+        $this->dependencies = new DependencyManager($this->processFactory, [
+            'python3',
+            'pip3',
+        ]);
+
+        $this->requirements = new RequirementsManager($this->processFactory, $this->pythonDir);
     }
 
     /**
@@ -27,7 +41,7 @@ class PythonEnvironmentManager
         $this->checkPythonRequirements();
         $this->createPythonDirectory();
         $this->createVirtualEnvironment();
-        $this->installDependencies();
+        $this->installRequirements();
     }
 
     /**
@@ -35,14 +49,7 @@ class PythonEnvironmentManager
      */
     private function checkPythonRequirements(): void
     {
-        $commands = ['python3', 'pip3'];
-
-        foreach ($commands as $command) {
-            $result = $this->makeProcess()->run("command -v $command");
-            if (! $result->successful()) {
-                throw new PymanException("$command is required but not installed.");
-            }
-        }
+        $this->dependencies->check();
     }
 
     /**
@@ -51,7 +58,7 @@ class PythonEnvironmentManager
     private function createPythonDirectory(): void
     {
         if (! is_dir($this->pythonDir) && ! mkdir($this->pythonDir, 0755, true)) {
-            throw new PymanException("Failed to create directory: {$this->pythonDir}");
+            throw new FolderCouldNotBeCreatedException("Failed to create directory: {$this->pythonDir}");
         }
     }
 
@@ -66,7 +73,7 @@ class PythonEnvironmentManager
                 ->run('python3 -m venv venv');
 
             if (! $result->successful()) {
-                throw new PymanException('Failed to create virtual environment: '.$result->errorOutput());
+                throw new VenvManagementException('Failed to create virtual environment: '.$result->errorOutput());
             }
         }
     }
@@ -74,23 +81,9 @@ class PythonEnvironmentManager
     /**
      * @throws PymanException
      */
-    private function installDependencies(): void
+    private function installRequirements(): void
     {
-        $requirementsPath = $this->pythonDir.'/requirements.txt';
-
-        if (! file_exists($requirementsPath)) {
-            throw new PymanException("requirements.txt not found in {$this->pythonDir}");
-        }
-
-        $venvPip = $this->pythonDir.'/venv/bin/pip';
-
-        $result = $this->makeProcess()->path($this->pythonDir)
-            ->timeout(300)
-            ->run([$venvPip, 'install', '-r', 'requirements.txt', '-q']);
-
-        if (! $result->successful()) {
-            throw new PymanException('Failed to install dependencies: '.$result->errorOutput());
-        }
+        $this->requirements->install();
     }
 
     private function makeProcess(): PendingProcess
