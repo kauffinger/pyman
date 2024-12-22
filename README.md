@@ -1,7 +1,8 @@
 # Pyman - Python Environment Manager for PHP
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/kauffinger/pyman.svg?style=flat-square)](https://packagist.org/packages/kauffinger/pyman)
-[![Tests](https://img.shields.io/github/actions/workflow/status/kauffinger/pyman/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/kauffinger/pyman/actions/workflows/run-tests.yml)
+[![Linting](https://img.shields.io/github/actions/workflow/status/kauffinger/pyman/formats.yml?branch=main&label=linting&style=flat-square)](https://github.com/kauffinger/pyman/actions/workflows/formats.yml)
+[![Tests](https://img.shields.io/github/actions/workflow/status/kauffinger/pyman/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/kauffinger/pyman/actions/workflows/tests.yml)
 [![Total Downloads](https://img.shields.io/packagist/dt/kauffinger/pyman.svg?style=flat-square)](https://packagist.org/packages/kauffinger/pyman)
 
 Pyman is a PHP package that simplifies the management of Python dependencies in PHP applications. It's designed to help you seamlessly integrate Python scripts and libraries into your PHP projects by handling virtual environment setup and dependency management.
