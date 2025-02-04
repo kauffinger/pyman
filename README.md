@@ -20,6 +20,8 @@ Pyman is a PHP package that simplifies the management of Python dependencies in 
 - Python 3.x
 - pip3
 
+On Debian-based distros you might need `python3.12-venv`
+
 ## Installation
 
 You can install the package via composer:
