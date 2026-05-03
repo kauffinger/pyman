@@ -11,6 +11,13 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         php: ['8.3']
         dependency-version: [prefer-lowest, prefer-stable]
+        include:
+          - os: ubuntu-latest
+            php: '8.4'
+            dependency-version: prefer-stable
+          - os: macos-latest
+            php: '8.4'
+            dependency-version: prefer-stable
 
     name: Tests P${{ matrix.php }} - ${{ matrix.os }} - ${{ matrix.dependency-version }}
 

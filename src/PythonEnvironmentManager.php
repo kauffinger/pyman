@@ -57,7 +57,11 @@ class PythonEnvironmentManager
      */
     private function createPythonDirectory(): void
     {
-        if (! is_dir($this->pythonDir) && ! mkdir($this->pythonDir, 0755, true)) {
+        if (is_dir($this->pythonDir)) {
+            return;
+        }
+
+        if (file_exists($this->pythonDir) || ! mkdir($this->pythonDir, 0755, true)) {
             throw new FolderCouldNotBeCreatedException("Failed to create directory: {$this->pythonDir}");
         }
     }
